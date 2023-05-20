@@ -30,33 +30,52 @@ async function run() {
 
     const toyCollection = client.db('toylandDB').collection('toys')
 
+
+    // creating index on two fields
+
+    const indexKeys = { name: 1, subcategory: 1 };
+    const indexOptions = { name: "nameSubcategory" }
+    const result = await toyCollection.createIndex(indexKeys, indexOptions);
+
+
+    app.get('/searchToyByNameCategory/:text', async (req, res) => {
+      const searchText = req.params.text;
+      const result = await toyCollection.find({
+        $or: [
+          { name: { $regex: searchText, $options: "i" } },
+          { subcategory: { $regex: searchText, $options: "i" } }
+        ]
+      }).toArray();
+      res.send(result)
+    })
+
     // get operation
-    app.get('/toys', async(req, res) => {
+    app.get('/toys', async (req, res) => {
       console.log(req.query?.email)
       let query = {}
-      if(req.query?.email){
-        query = { sellerEmail: req.query.email}
+      if (req.query?.email) {
+        query = { sellerEmail: req.query.email }
       }
       const result = await toyCollection.find(query).toArray()
       res.send(result)
     })
 
-    app.get('/toys/:text', async(req, res) => {
+    app.get('/toys/:text', async (req, res) => {
       console.log(req.params.text)
-      const result = await toyCollection.find({subcategory: req.params.text}).toArray()
+      const result = await toyCollection.find({ subcategory: req.params.text }).toArray()
       res.send(result)
     })
 
-    app.get('/toy/:id', async(req, res) => {
+    app.get('/toy/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await toyCollection.findOne(query);
       res.send(result)
     })
 
 
     // post operation
-    app.post('/addToys', async(req, res) => {
+    app.post('/addToys', async (req, res) => {
       const toy = req.body;
       console.log(toy)
       const result = await toyCollection.insertOne(toy)
@@ -64,9 +83,9 @@ async function run() {
     })
 
     // Update/Put operation
-    app.put('/toy/:id', async(req, res) => {
+    app.put('/toy/:id', async (req, res) => {
       const id = req.params.id;
-      const filter = {_id : new ObjectId(id)}
+      const filter = { _id: new ObjectId(id) }
       const options = { upsert: true };
       const updatedToy = req.body
       const toy = {
@@ -81,9 +100,9 @@ async function run() {
     })
 
     // delete operation
-    app.delete('/toy/:id', async(req, res) => {
+    app.delete('/toy/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await toyCollection.deleteOne(query);
       res.send(result)
     })
@@ -99,10 +118,10 @@ async function run() {
 run().catch(console.dir);
 
 
-app.get('/', (req, res)=> {
-    res.send('toy market is running smoothly')
+app.get('/', (req, res) => {
+  res.send('toy market is running smoothly')
 })
 
 app.listen(port, () => {
-    console.log(`toy market is running on port: ${port}`)
+  console.log(`toy market is running on port: ${port}`)
 })
