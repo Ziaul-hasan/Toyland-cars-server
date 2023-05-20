@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 5000
@@ -30,6 +30,7 @@ async function run() {
 
     const toyCollection = client.db('toylandDB').collection('toys')
 
+    // get operation
     app.get('/toys', async(req, res) => {
       console.log(req.query?.email)
       let query = {}
@@ -46,10 +47,27 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/toy/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+      const result = await toyCollection.findOne(query);
+      res.send(result)
+    })
+
+
+    // post operation
     app.post('/addToys', async(req, res) => {
       const toy = req.body;
       console.log(toy)
       const result = await toyCollection.insertOne(toy)
+      res.send(result)
+    })
+
+    // delete operation
+    app.delete('/toy/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await toyCollection.deleteOne(query);
       res.send(result)
     })
 
