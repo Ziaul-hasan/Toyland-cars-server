@@ -31,7 +31,12 @@ async function run() {
     const toyCollection = client.db('toylandDB').collection('toys')
 
     app.get('/toys', async(req, res) => {
-      const result = await toyCollection.find().toArray()
+      console.log(req.query?.email)
+      let query = {}
+      if(req.query?.email){
+        query = { sellerEmail: req.query.email}
+      }
+      const result = await toyCollection.find(query).toArray()
       res.send(result)
     })
 
