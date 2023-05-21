@@ -26,16 +26,16 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    client.connect();
 
     const toyCollection = client.db('toylandDB').collection('toys')
 
 
     // creating index on two fields
 
-    const indexKeys = { name: 1, subcategory: 1 };
-    const indexOptions = { name: "nameSubcategory" }
-    const result = await toyCollection.createIndex(indexKeys, indexOptions);
+    // const indexKeys = { name: 1, subcategory: 1 };
+    // const indexOptions = { name: "nameSubcategory" }
+    // const result = await toyCollection.createIndex(indexKeys, indexOptions);
 
 
     app.get('/searchToyByNameCategory/:text', async (req, res) => {
@@ -56,7 +56,7 @@ async function run() {
       if (req.query?.email) {
         query = { sellerEmail: req.query.email }
       }
-      const result = await toyCollection.find(query).sort({price: -1}).limit(20).toArray()
+      const result = await toyCollection.find(query).limit(20).toArray()
       res.send(result)
     })
 
