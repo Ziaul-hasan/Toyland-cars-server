@@ -32,8 +32,7 @@ async function run() {
 
 
     // creating index on two fields
-    // change git hub link
-    
+
     // const indexKeys = { name: 1, subcategory: 1 };
     // const indexOptions = { name: "nameSubcategory" }
     // const result = await toyCollection.createIndex(indexKeys, indexOptions);
